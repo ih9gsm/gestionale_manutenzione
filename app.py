@@ -12,6 +12,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+def create_tables():
+    """Create database tables if they don't exist."""
+    with app.app_context():
+        db.create_all()
+
 class Segnalazione(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     titolo = db.Column(db.String(100), nullable=False)
@@ -30,9 +35,6 @@ class Preventivo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     importo = db.Column(db.Float, nullable=False)
 
-@app.before_first_request
-def create_tables():
-    db.create_all()
 
 @app.route('/segnalazioni', methods=['GET', 'POST'])
 def handle_segnalazioni():
@@ -87,4 +89,5 @@ def send_email():
     return jsonify({'status': 'sent'})
 
 if __name__ == '__main__':
+    create_tables()
     app.run(debug=True)
